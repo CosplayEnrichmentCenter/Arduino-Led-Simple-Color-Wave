@@ -21,7 +21,7 @@ const int waveLength = NB_PIXELS / 2;
    Define the color of the wave. You can use RGB or HEX value.
    RGB values must be between 0 & 255.
    e.g :
-   RGB : const CRGB defaultColor = CRGB(255,0,0); 
+   RGB : const CRGB defaultColor = CRGB(255,0,0);
    HEX : const CRGB defaultColor = CRGB(0xFF0000);
 */
 const CRGB defaultColor = CRGB(255, 0, 0);
@@ -33,7 +33,7 @@ const CRGB defaultColor = CRGB(255, 0, 0);
        HALF_WAVE_SIZE : size ratio of the first part of the wave. Second part would be the remaining space.
        Used to determine the size and also the easing for the start and the end of the size.
        Must be between 0 & 1
- */
+*/
 #define HALF_WAVE_SIZE 0.5
 
 
@@ -48,7 +48,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NB_PIXELS, PIN, NEO_GRB + NEO_KHZ800
 unsigned long time;
 
 //half wave size
-const int halfWaveSize = waveLength *HALF_WAVE_SIZE ;
+const int halfWaveSize = waveLength * HALF_WAVE_SIZE ;
 
 void setup() {
   strip.begin();  // initialize the strip
@@ -66,12 +66,12 @@ void renderLEDs() {
   time = millis();
 
   for (int i = 0; i < NB_PIXELS; i++) {
-    float delta = ((float)(time % TIME_LOOP) / (float)TIME_LOOP) * (float)NB_PIXELS;
+    float delta = ((float)(time % TIME_LOOP) / TIME_LOOP) * NB_PIXELS;
     float v = getPixelValue(i, delta);
 
     strip.setPixelColor(i, defaultColor.r * v, defaultColor.g * v , defaultColor.b * v);
   }
-  
+
   strip.show();
 
 }
@@ -80,18 +80,15 @@ float getPixelValue(int index, float deltaI) {
   if (position < 0) {
     position = position + NB_PIXELS;
   }
-  if (position > 5 && position < waveLength - 5) {
+  if (position > 0 && position < waveLength) {
     if (position < (float)halfWaveSize) {
 
       float p = position / (halfWaveSize);
       return CubicEaseInOut(p);
     }
     else if (position < waveLength) {
-      float p = 1-(position - halfWaveSize) / (halfWaveSize);
+      float p = 1 - (position - halfWaveSize) / (halfWaveSize);
       return CubicEaseInOut(p);
-    }
-    else {
-      return 0;
     }
   }
   else {
