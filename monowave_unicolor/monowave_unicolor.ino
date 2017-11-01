@@ -1,6 +1,5 @@
 #include <Adafruit_NeoPixel.h>
 #include <FastLED.h>
-#include <math.h>
 
 
 /********BASIC SETTINGS********/
@@ -8,14 +7,16 @@
 // the data pin for the NeoPixels
 #define PIN 6
 
-// How many NeoPixels we will be using, charge according to your needs
+// How many LEDs we will be using, charge according to your needs
 #define NB_PIXELS 60
 
 //time for a full loop in milliseconds. e.g : 5000ms is 5s.
 #define TIME_LOOP 7500
 
-//length of the wave in LEDs.
-const int waveLength = NB_PIXELS / 2;
+//size of the wave
+//e.g : NB_PIXELS to have a wave of the size of your LED strip that you already defined
+//20 (or anything else) to have a shorter wave than the length of your LED strip
+#define waveLength 20
 
 /*
    Define the color of the wave. You can use RGB or HEX value.
@@ -24,7 +25,7 @@ const int waveLength = NB_PIXELS / 2;
    RGB : const CRGB defaultColor = CRGB(255,0,0);
    HEX : const CRGB defaultColor = CRGB(0xFF0000);
 */
-const CRGB defaultColor = CRGB(255, 128, 0);
+const CRGB defaultColor = CRGB(255, 0, 128);
 
 
 /********ADVANCED SETTINGS********/
@@ -47,7 +48,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NB_PIXELS, PIN, NEO_GRB + NEO_KHZ800
 //time variable
 unsigned long time;
 
-//half wave size
+//half wave size, used for a smooth effect later
 const int halfWaveSize = waveLength * HALF_WAVE_SIZE ;
 
 void setup() {
@@ -55,7 +56,7 @@ void setup() {
   strip.show();   // make sure it is visible
   strip.clear();  // Initialize all pixels to 'off'
   //strip.setBrightness(60);
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {
@@ -73,6 +74,7 @@ void renderLEDs() {
     int g = defaultColor.g * v;
     int b = defaultColor.b * v;
 
+    //used to prevent weird corlor variation.
     if (r == 0 && defaultColor.r > 0 && v>0)
       r = 1;
     if (g == 0 && defaultColor.g > 0 && v>0)
@@ -91,7 +93,7 @@ float getPixelValue(int index, float deltaI) {
   if (position < 0) {
     position = position + NB_PIXELS;
   }
-  if (position > 0 && position < waveLength) {
+  if (position >= 0 && position < waveLength) {
     if (position < (float)halfWaveSize) {
 
       float p = position / (halfWaveSize);
@@ -108,7 +110,7 @@ float getPixelValue(int index, float deltaI) {
 }
 
 
-/******************EASING FUNCTION*****************/
+/******************EASING FUNCTIONS*****************/
 
 float CubicEaseInOut(float p)
 {
