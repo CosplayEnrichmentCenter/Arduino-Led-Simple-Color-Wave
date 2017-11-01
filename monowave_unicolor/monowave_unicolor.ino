@@ -24,7 +24,7 @@ const int waveLength = NB_PIXELS / 2;
    RGB : const CRGB defaultColor = CRGB(255,0,0);
    HEX : const CRGB defaultColor = CRGB(0xFF0000);
 */
-const CRGB defaultColor = CRGB(255, 0, 0);
+const CRGB defaultColor = CRGB(255, 128, 0);
 
 
 /********ADVANCED SETTINGS********/
@@ -69,7 +69,18 @@ void renderLEDs() {
     float delta = ((float)(time % TIME_LOOP) / TIME_LOOP) * NB_PIXELS;
     float v = getPixelValue(i, delta);
 
-    strip.setPixelColor(i, defaultColor.r * v, defaultColor.g * v , defaultColor.b * v);
+    int r = defaultColor.r * v;
+    int g = defaultColor.g * v;
+    int b = defaultColor.b * v;
+
+    if (r == 0 && defaultColor.r > 0 && v>0)
+      r = 1;
+    if (g == 0 && defaultColor.g > 0 && v>0)
+      g = 1;
+    if (b == 0 && defaultColor.b > 0 && v>0)
+      b = 1;
+
+    strip.setPixelColor(i, r , g , b);
   }
 
   strip.show();
