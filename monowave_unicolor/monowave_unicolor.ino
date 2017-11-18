@@ -19,28 +19,46 @@
 #define waveLength 20
 
 /*
-   Define the color of the wave. You can use RGB or HEX value.
-   RGB values must be between 0 & 255.
-   e.g :
-   RGB : const CRGB defaultColor = CRGB(255,0,0);
-   HEX : const CRGB defaultColor = CRGB(0xFF0000);
-*/
-const CRGB defaultColor = CRGB(255, 0, 128);
+ * Define the color of the wave. You can use RGB, HEX or HSV color.
+ * RGB values must be between 0 & 255.
+ * e.g for red color:
+ * RGB : const CRGB defaultColor = CRGB(255,0,0);
+ * HEX : const CRGB defaultColor = CRGB(0xFF0000);
+ * HSV : const CRGB defaultColor = CHSV(0,255,255);
+ */
+const CRGB defaultColor = CRGB(255, 128, 0);
 
 
 /********ADVANCED SETTINGS********/
 
 /*
-       HALF_WAVE_SIZE : size ratio of the first part of the wave. Second part would be the remaining space.
-       Used to determine the size and also the easing for the start and the end of the size.
-       Must be between 0 & 1
-*/
+ * HALF_WAVE_SIZE : size ratio of the first part of the wave. Second part would be the remaining space.
+ * Used to determine the size and also the easing for the start and the end of the size.
+ * Must be between 0 & 1
+ */
 #define HALF_WAVE_SIZE 0.5
+
+/*
+ * Define the Wave look, choose one of the following choice.
+ * SOFT : Smooth wave wave, recommended
+ * HARD : Smooth with a deeper curve
+ * LINEAR : Spike effect
+ */
+#define WAVE_TYPE SOFT
 
 
 /******************CODE*****************/
 /**************DO NOT TOUCH*************/
 /*********unless you really need********/
+
+
+#if WAVE_TYPE == SOFT
+  #define WAVE_EASING CubicEaseInOut
+#elif WAVE_TYPE == HARD
+  #define WAVE_EASING QuinticEaseInOut
+#else
+  #define WAVE_EASING Linear
+#endif
 
 // Instatiate the NeoPixel from the ibrary
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NB_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -74,6 +92,7 @@ void renderLEDs() {
     int g = defaultColor.g * v;
     int b = defaultColor.b * v;
 
+
     //used to prevent weird corlor variation.
     if (r == 0 && defaultColor.r > 0 && v>0)
       r = 1;
@@ -97,11 +116,11 @@ float getPixelValue(int index, float deltaI) {
     if (position < (float)halfWaveSize) {
 
       float p = position / (halfWaveSize);
-      return CubicEaseInOut(p);
+      return WAVE_EASING(p);
     }
     else if (position < waveLength) {
       float p = 1 - (position - halfWaveSize) / (halfWaveSize);
-      return CubicEaseInOut(p);
+      return WAVE_EASING(p);
     }
   }
   else {
@@ -111,7 +130,9 @@ float getPixelValue(int index, float deltaI) {
 
 
 /******************EASING FUNCTIONS*****************/
-
+float Linear(float p){
+  return p;
+}
 float CubicEaseInOut(float p)
 {
   if (p < 0.5)
