@@ -39,8 +39,8 @@ const CRGB defaultColor = CRGB(255, 0, 0);
 #define HALF_WAVE_SIZE 0.5
 
 /*
- * Define the Wave look, choose one of the following choice.
- * SOFT : Smooth wave wave, recommended
+ * Define the Wave shape, choose one of the following choice.
+ * SOFT : Smooth wave, recommended
  * HARD : Smooth with a deeper curve
  * LINEAR : Spike effect
  */
