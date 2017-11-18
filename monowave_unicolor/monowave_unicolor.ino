@@ -20,7 +20,7 @@
 
 /*
  * Define the color of the wave. You can use RGB, HEX or HSV color.
- * RGB values must be between 0 & 255.
+ * Color values must be between 0 & 255.
  * e.g for red color:
  * RGB : const CRGB defaultColor = CRGB(255,0,0);
  * HEX : const CRGB defaultColor = CRGB(0xFF0000);
