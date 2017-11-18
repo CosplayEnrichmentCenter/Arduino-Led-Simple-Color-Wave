@@ -5,16 +5,16 @@
 /********BASIC SETTINGS********/
 
 // the data pin for the NeoPixels
-#define PIN 6
+#define DATA_PIN 6
 
 // How many LEDs we will be using, charge according to your needs
-#define NB_PIXELS 60
+#define NUM_LEDS 60
 
 //time for a full loop in milliseconds. e.g : 5000ms is 5s.
 #define TIME_LOOP 7500
 
 //size of the wave
-//e.g : NB_PIXELS to have a wave of the size of your LED strip that you already defined
+//e.g : NUM_LEDS to have a wave of the size of your LED strip that you already defined
 //20 (or anything else) to have a shorter wave than the length of your LED strip
 #define waveLength 20
 
@@ -26,7 +26,7 @@
  * HEX : const CRGB defaultColor = CRGB(0xFF0000);
  * HSV : const CRGB defaultColor = CHSV(0,255,255);
  */
-const CRGB defaultColor = CRGB(255, 128, 0);
+const CRGB defaultColor = CRGB(255, 0, 0);
 
 
 /********ADVANCED SETTINGS********/
@@ -60,19 +60,19 @@ const CRGB defaultColor = CRGB(255, 128, 0);
   #define WAVE_EASING Linear
 #endif
 
-// Instatiate the NeoPixel from the ibrary
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NB_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
 //time variable
 unsigned long time;
 
 //half wave size, used for a smooth effect later
 const int halfWaveSize = waveLength * HALF_WAVE_SIZE ;
 
+CRGB leds[NUM_LEDS];
+
 void setup() {
-  strip.begin();  // initialize the strip
-  strip.show();   // make sure it is visible
-  strip.clear();  // Initialize all pixels to 'off'
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  //strip.begin();  // initialize the strip
+  //strip.show();   // make sure it is visible
+  //strip.clear();  // Initialize all pixels to 'off'
   //strip.setBrightness(60);
   //Serial.begin(9600);
 }
@@ -84,8 +84,8 @@ void loop() {
 void renderLEDs() {
   time = millis();
 
-  for (int i = 0; i < NB_PIXELS; i++) {
-    float delta = ((float)(time % TIME_LOOP) / TIME_LOOP) * NB_PIXELS;
+  for (int i = 0; i < NUM_LEDS; i++) {
+    float delta = ((float)(time % TIME_LOOP) / TIME_LOOP) * NUM_LEDS;
     float v = getPixelValue(i, delta);
 
     int r = defaultColor.r * v;
@@ -101,16 +101,16 @@ void renderLEDs() {
     if (b == 0 && defaultColor.b > 0 && v>0)
       b = 1;
 
-    strip.setPixelColor(i, r , g , b);
+    leds[i] = CRGB(r , g , b);
   }
 
-  strip.show();
+  FastLED.show();
 
 }
 float getPixelValue(int index, float deltaI) {
   float position = (index - deltaI);
   if (position < 0) {
-    position = position + NB_PIXELS;
+    position = position + NUM_LEDS;
   }
   if (position >= 0 && position < waveLength) {
     if (position < (float)halfWaveSize) {
